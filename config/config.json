@@ -1,0 +1,11 @@
+{
+    "port": 3033,
+    "ip": "localhost",
+    "confsql": {
+        "host": "localhost",
+        "database": "postgres",
+        "user": "postgres",
+        "password": "sevenseven"
+    },
+    "rrr": { "a": "b" }
+}

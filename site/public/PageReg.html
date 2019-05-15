@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+
+<head>
+    <meta name="viewport" content="width=device-width">
+    <meta charset="utf-8">
+    <title>Экспериментальный сайт.</title>
+    <meta name="description" content="Экспериментальный сайт.">
+    <meta name="author" content="Samohwalov Dmitriy">
+    <link rel="stylesheet" href="stylesheets/style1.css">
+    <script src=""></script>
+
+</head>
+
+<body>
+    <script src="http://localhost:3033/socket.io/socket.io.js"></script>
+    <script src="scriptSconn.js"></script>
+
+
+    <div id="in2" style=" border: 2px solid red; padding:5px"></div>
+    <div> <a href="index.html" style="">На главную</a></div>
+
+    <div class="login">
+        <h3>Регистрация</h3>
+        <label for="login">Логин</label>
+        <input type="text" id="login" name="login" />
+        <label for="password">Пароль</label>
+        <input type="password" id="password" name="password" />
+        <input type="submit" value="Зарегистрироватся" id="send" />
+    </div>
+
+
+    <script>
+        socket.on('whuN', function() {
+
+            socket.emit("whuS");
+        });
+
+
+        socket.on('whu', function(value) {
+
+            in2.innerHTML = "";
+            //in2.innerHTML = JSON.stringify(value);
+            value.map(el => {
+                var divE = document.createElement('div');
+                var divp = document.createElement('span');
+                var divA = document.createElement('span');
+
+
+                divp.innerHTML = "<br> " + el.name + "=" + el.passw + "=" + el.id + "<br> ";
+
+
+                divE.appendChild(divp);
+                divE.appendChild(divA);
+                in2.appendChild(divE);
+            }); //map
+
+
+        });
+
+        send.onclick = function() {
+            let name = login.value;
+            let passwС = password.value;
+            //if(url1.value.slice(0,7)==="http://"||url1.value.slice(0,8)==="https://") {  
+            //alert(JSON.stringify(value));
+            socket.emit("Pserch", (name));
+            let l;
+            socket.on("Pserchres", function(data) {
+                //alert(JSON.stringify(data));
+                l = data.length;
+
+                if (l == 0) {
+                    socket.emit("PaddB", ([ //{}
+                        name,
+                        passwС
+
+                    ]));
+                    login.value = "";
+                    password.value = "";
+
+                    //}else {alert("no url")};
+
+
+                } else alert("Уже есть!");
+
+            });
+        };
+    </script>
+
+</body>
+
+</html>
