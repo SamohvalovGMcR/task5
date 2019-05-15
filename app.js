@@ -15,12 +15,6 @@ const server = http.createServer().listen(config.get('port'), config.get('ip'), 
 
 const io = require('socket.io')(server);
 
-/* const confsql = { //переложить в nconf
-    host: "localhost",
-    database: "postgres",
-    user: 'postgres',
-    password: 'sevenseven'
-}; */
 
 //console.log(config.get("confsql"));
 
