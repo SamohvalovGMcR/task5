@@ -5,7 +5,7 @@
         "host": "localhost",
         "database": "postgres",
         "user": "postgres",
-        "password": "sevenseven"
-    },
-    "rrr": { "a": "b" }
+        "password": "password"
+    }
+   
 }
