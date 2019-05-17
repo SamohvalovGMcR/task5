@@ -1,5 +1,5 @@
 'use strict'
-const { Pool, Client } = require('pg')
+const pg = require('pg')
 const config = require('./config');
 const path = require('path');
 const http = require('http');
@@ -24,20 +24,40 @@ const io = require('socket.io')(server);
 
 //console.log(config.get("confsql"));
 
-const pool = new Pool(config.get("confsql"));
+const pool = new pg.Client(config.get("confsql"));
+pool.connect();
+
 
 pool.query("CREATE TABLE users1 (Id SERIAL PRIMARY KEY, Name   CHARACTER VARYING(30) , passw CHARACTER VARYING(30))", (err, res) => {
     if (err) {
         console.log(err.stack)
     }
-})
+});
 
+pool.query("CREATE  RULE rule1 AS ON INSERT TO public.users1 DO NOTIFY watchers, 'INSERT';", (err, res) => {
+    if (err) {
+        console.log(err.stack)
+    }
+});
 
+pool.query("CREATE  RULE rule2 AS ON UPDATE TO public.users1 DO NOTIFY watchers, 'update';", (err, res) => {
+    if (err) {
+        console.log(err.stack)
+    }
+});
 
-io.sockets.on('connection', function(client) { //get
-    const valueFind = () =>
+pool.query("CREATE  RULE rule3 AS ON DELETE TO public.users1 DO NOTIFY watchers, 'DELETE';", (err, res) => {
+    if (err) {
+        console.log(err.stack)
+    }
+});
+
+io.sockets.on('connection', function(client) {
+    const valueFind = () => //get
         pool.query('SELECT *  FROM users1', (err, res) => {
-            console.log(err);
+            if (err) {
+                console.log(err);
+            }
             //console.log("RESSS" + JSON.stringify(res.rows[0]));
             client.emit("whu", res.rows);
 
@@ -48,14 +68,31 @@ io.sockets.on('connection', function(client) { //get
     valueFind();
 
     client.broadcast.emit('whuN');
+
     client.on("whuS", function() {
 
-        setTimeout(function() {
-            valueFind();
-        }, 200);
+        // setTimeout(function() {
+        valueFind();
+        // }, 200);
 
     });
 
+
+    pool.query('LISTEN watchers', (err, res) => {
+        //console.log("watch" + JSON.stringify(res));
+        if (err) {
+            console.log(err)
+        }
+
+
+
+    });
+
+    pool.on('notification', function(msg) {
+        console.log("notification! " + JSON.stringify(msg));
+        //client.emit("message", "notification!" + JSON.stringify(msg));
+        client.broadcast.emit('whuN');
+    });
 
 
     client.on("PaddB", function(data) { //добавить
@@ -76,9 +113,9 @@ io.sockets.on('connection', function(client) { //get
             client.Token = generateToken(data[0]);
             console.log(client.Token);
 
-            setTimeout(function() {
-                valueFind();
-            }, 200);
+            //setTimeout(function() {
+            valueFind();
+            // }, 200);
 
             //console.log("err.stack")
             client.broadcast.emit('whuN');
@@ -107,9 +144,9 @@ io.sockets.on('connection', function(client) { //get
         })
         console.log("err.stack")
 
-        setTimeout(function() {
-            valueFind();
-        }, 200);
+        //setTimeout(function() {
+        valueFind();
+        // }, 200);
 
         client.broadcast.emit('whuN');
     });
@@ -124,9 +161,9 @@ io.sockets.on('connection', function(client) { //get
         })
 
 
-        setTimeout(function() {
-            valueFind();
-        }, 200);
+        // setTimeout(function() {
+        valueFind();
+        // }, 200);
 
         client.broadcast.emit('whuN');
     });
