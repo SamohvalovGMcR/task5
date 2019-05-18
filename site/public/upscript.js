@@ -24,23 +24,51 @@ for (let i = 0; i < Arrbutton.length; i++) {
     }
     document.getElementById(idup).appendChild(divn);
 
-    let name1 = window.localStorage.getItem('aName') || [];
 
-    let p = document.createElement('p');
-    p.innerHTML = "Âû-" + name1;
-    document.getElementById("Hn").appendChild(p);
-}
+} //for
 
-Plogin.onload = () => {
 
-    document.createElement('div').innerHTML = Ht;
-}
+
+
+
+
+
+
+let p = document.createElement('p');
+
+document.getElementById("Hn").appendChild(p);
+
+socket.on('sendname', function(name1) {
+    p.dataset.name1 = name1;
+    p.innerHTML = "Ð’Ñ‹-" + name1;
+});
+
+//let name1 = window.localStorage.getItem('aName') || [];
+p.dataset.name1 = window.localStorage.getItem('aName');
+p.innerHTML = "Ð’Ñ‹-" + window.localStorage.getItem('aName') || [];
+//alert(name1);
+
+window.onunload = () => window.localStorage.setItem("aName", p.dataset.name1);
+
+//Plogin1.onload = () => {
+
+let ddv = document.createElement('div') //
+ddv.innerHTML = Ht;
+document.body.appendChild(ddv);
+//}
 const divn2 = document.createElement('button');
-divn2.innerHTML = "Âõîä2";
+divn2.innerHTML = "Ð’Ñ…Ð¾Ð´2";
+divn2.classList.add('bup');
+divn2.onmousedown = () => {
+    divn2.classList.remove('bup');
+    divn2.classList.add('bdow');
+};
 divn2.onmouseup = () => {
 
     //document.body.appendChild(doc.cloneNode(true));
     document.querySelector('.login').style.display = "block";
+    divn2.classList.remove('bdow');
+    divn2.classList.add('bup');
 };
 
 document.getElementById("bdiv").appendChild(divn2);

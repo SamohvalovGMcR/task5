@@ -32,11 +32,11 @@
 
 
     <script>
-        socket.on('whuN', function() {
+        /* socket.on('whuN', function() {
 
-            socket.emit("whuS");
-        });
-
+                            socket.emit("whuS");
+                        });
+                 */
 
         socket.on('whu', function(value) {
 
@@ -68,7 +68,7 @@
             let l;
             socket.on("Pserchres", function(data) {
                 //alert(JSON.stringify(data));
-                l = data.length;
+                l = data; //.length;
 
                 if (l == 0) {
                     socket.emit("PaddB", ([ //{}
