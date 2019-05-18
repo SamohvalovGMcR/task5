@@ -64,8 +64,8 @@
         loginB.onclick = () => {
             socket.emit("login", ([login.value, password.value]));
 
-
-
+            window.localStorage.setItem("aName", login.value);
+            //alert('aName1' + window.localStorage.getItem('aName'));
             login.value = "";
             password.value = "";
         };

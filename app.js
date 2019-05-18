@@ -53,6 +53,9 @@ pool.query("CREATE  RULE rule3 AS ON DELETE TO public.users1 DO NOTIFY watchers,
 });
 
 io.sockets.on('connection', function(client) {
+    // if (client.name) {
+    client.emit("myName", client.name);
+    // } //if 
     const valueFind = () => //get
         pool.query('SELECT *  FROM users1', (err, res) => {
             if (err) {
@@ -200,6 +203,7 @@ io.sockets.on('connection', function(client) {
 
                 if (res.rows.length > 0 && data[1] && data[1] === res.rows[0].passw) {
                     client.Token = generateToken(res.rows[0].name);
+                    client.name = res.rows[0].name; //!!!!!!!!
                     client.emit("message", "удачно " + res.rows[0].passw + "=" + data[1] + " " + res.rows[0].name + "=" + data[0] + " tok=" + client.Token);
                 } else { client.emit("message", "не удачнно " + JSON.stringify(res.rows[0]) + " tok=" + client.Token); }
             }) //отправить массивом

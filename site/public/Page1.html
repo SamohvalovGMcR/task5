@@ -10,15 +10,19 @@
     <meta name="author" content="Samohwalov Dmitriy">
     <link rel="stylesheet" href="stylesheets/styleP1.css">
     <script src=""></script>
+    <link rel="import" href="http://gmcr.ml/PageLogin.html">
 
 </head>
 
 <body>
+
+    <!-- <link rel="import" href="../public/PageLogin.html"> -->
+    <script src="http://localhost:3033/socket.io/socket.io.js"></script>
     <header>
         <div id="bdiv" class="my-flex-containerH">
 
             <img style="" src="" width=10 height=10 alt="logo">
-            <p>Какая-нибуд надпись</p>
+            <p id="Hn">Какая-нибуд надпись</p>
             <script>
                 const idup = "bdiv";
                 const Tbutton = 1;
@@ -167,8 +171,22 @@
     контент... контент... контент... контент... контент... контент... контент... контент... контент... контент... контент..контент... контент... контент... контент... контент... контент... контент... контент... контент... контент... контент... контент..контент...
     контент... контент... контент... контент... контент... контент... контент... контент... контент... контент... контент..контент... контент... контент... контент... контент... контент... контент... контент... контент... контент... контент... контент..
     </div>
+    <script src="scriptSconn.js"></script>
     <script>
         hbb.style.height = document.getElementsByTagName('header')[0].clientHeight + "px";
+
+        const divn2 = document.createElement('button');
+        divn2.innerHTML = "Вход2";
+        /* divn2.onmouseup = () => {
+
+            document.body.appendChild(doc.cloneNode(true));
+
+        };
+
+        document.getElementById(idup).appendChild(divn2);
+
+        const doc = (document.querySelector('link[rel="import"]').import).querySelector('.login'); */
+        ///idup исправить
     </script>
 </body>
 
