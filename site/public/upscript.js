@@ -23,4 +23,24 @@ for (let i = 0; i < Arrbutton.length; i++) {
         };
     }
     document.getElementById(idup).appendChild(divn);
+
+    let name1 = window.localStorage.getItem('aName') || [];
+
+    let p = document.createElement('p');
+    p.innerHTML = "Вы-" + name1;
+    document.getElementById("Hn").appendChild(p);
 }
+
+Plogin.onload = () => {
+
+    document.createElement('div').innerHTML = Ht;
+}
+const divn2 = document.createElement('button');
+divn2.innerHTML = "Вход2";
+divn2.onmouseup = () => {
+
+    //document.body.appendChild(doc.cloneNode(true));
+    document.querySelector('.login').style.display = "block";
+};
+
+document.getElementById("bdiv").appendChild(divn2);
