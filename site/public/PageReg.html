@@ -34,9 +34,9 @@
     <script>
         /* socket.on('whuN', function() {
 
-                            socket.emit("whuS");
-                        });
-                 */
+                                    socket.emit("whuS");
+                                });
+                         */
 
         socket.on('whu', function(value) {
 
@@ -64,28 +64,28 @@
             let passwС = password.value;
             //if(url1.value.slice(0,7)==="http://"||url1.value.slice(0,8)==="https://") {  
             //alert(JSON.stringify(value));
-            socket.emit("Pserch", (name));
-            let l;
-            socket.on("Pserchres", function(data) {
-                //alert(JSON.stringify(data));
-                l = data; //.length;
+            //socket.emit("Pserch", (name));
+            //let l;
+            // socket.on("Pserchres", function(data) {
+            //alert(JSON.stringify(data));
+            //  l = data; //.length;
 
-                if (l == 0) {
-                    socket.emit("PaddB", ([ //{}
-                        name,
-                        passwС
+            //  if (l == 0) {
+            socket.emit("PaddB", ([ //{}
+                name,
+                passwС
 
-                    ]));
-                    //window.localStorage.removeItem("aName");
-                    login.value = "";
-                    password.value = "";
+            ]));
+            //window.localStorage.removeItem("aName");
+            login.value = "";
+            password.value = "";
 
-                    //}else {alert("no url")};
+            //}else {alert("no url")};
 
 
-                } else alert("Уже есть!");
+            // } else alert("Уже есть!");
 
-            });
+            //});
         };
     </script>
 

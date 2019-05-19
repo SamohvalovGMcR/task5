@@ -68,7 +68,12 @@ pool.query("SELECT * FROM users1 WHERE name = 'admin'", (err, res) => {
 io.sockets.on('connection', function(client) {
     // if (client.name) {
     client.emit("myName", client.name);
+
     // } //if 
+
+    const nameFind = (data) => "SELECT * FROM users1 WHERE name = '" + data + "'";
+
+
     const valueFind = () => //get
         pool.query('SELECT *  FROM users1', (err, res) => {
             if (err) {
@@ -111,32 +116,43 @@ io.sockets.on('connection', function(client) {
     });
 
 
-    client.on("PaddB", function(data) { //добавить
+    client.on("PaddB", function(data) { //добавить//verify
 
         //console.log(data);
         if (client.Token) {
             client.emit("message", "Вы уже!")
         } else {
-            pool.query('INSERT INTO users1(name, passw) VALUES($1, $2) ', data, (err, res) => {
-                // client.emit("message", "data " + data);
+            pool.query(nameFind(data[0]), (err, res) => {
                 if (err) {
                     console.log(err.stack)
-                } else {
-                    console.log(res.rows[0])
-                        // { name: 'brianc', passw: 'brian.m.carlson@gmail.com' }
                 }
+
+                console.log("data" + res.rows);
+
+                if (res.rows.length !== 0) {
+                    client.emit("message", "Такой есть!")
+                } else {
+                    pool.query('INSERT INTO users1(name, passw) VALUES($1, $2) ', data, (err, res) => {
+                        // client.emit("message", "data " + data);
+                        if (err) {
+                            console.log(err.stack)
+                        } else {
+                            console.log(res.rows[0])
+                                // { name: 'brianc', passw: 'brian.m.carlson@gmail.com' }
+                        }
+                    })
+
+                    client.Token = generateToken(data[0]);
+                    console.log(client.Token);
+
+                    //setTimeout(function() {
+                    valueFind();
+                    // }, 200);
+
+                    //console.log("err.stack")
+                    client.broadcast.emit('whuN');
+                } //else
             })
-
-            client.Token = generateToken(data[0]);
-            console.log(client.Token);
-
-            //setTimeout(function() {
-            valueFind();
-            // }, 200);
-
-            //console.log("err.stack")
-            client.broadcast.emit('whuN');
-
         };
     });
 
@@ -189,23 +205,26 @@ io.sockets.on('connection', function(client) {
 
 
 
+    /* 
+        client.on("Pserch", function(data) {
+            //console.log('data ' + nameFind(data))
+            //client.emit("Pserchres", nameFind(data).length); //лучше не отправлять vse
+            pool.query(nameFind(data), (err, res) => {
+                if (err) {
+                    console.log(err.stack)
+                }
 
-    client.on("Pserch", function(data) {
-        pool.query("SELECT * FROM users1 WHERE name = '" + data + "'", (err, res) => {
-            if (err) {
-                console.log(err.stack)
-            }
-            console.log("нашел " + JSON.stringify(res.rows));
-            client.emit("Pserchres", res.rows.length); //лучше не отправлять vse
-        });
+                console.log("data" + res.rows);
+
+            })
 
 
-        /*  setTimeout(function() {
-             valueFind();
-         }, 200); */
+            /*  setTimeout(function() {
+                 valueFind();
+             }, 200); */
 
-        //client.broadcast.emit('whuN');
-    });
+    //client.broadcast.emit('whuN');*/
+    // });
 
     client.on("login", function(data) {
         delete client.Token;
