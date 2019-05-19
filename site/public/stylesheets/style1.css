@@ -24,7 +24,8 @@
 }
 
 .login>input[type="text"],
-.login>input[type="password"] {
+.login>input[type="password"],
+.login>input[type="email"] {
     border-radius: 5px;
     width: 180px;
     border: 1px solid #ccc;

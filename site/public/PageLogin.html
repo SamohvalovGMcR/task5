@@ -31,16 +31,16 @@
         <input type="submit" value="Войти" id="loginB" />
     </div>
 
-    <div>
-        <input id="delV" name="dl" type="text" placeholder="del" style="display:block;">
-        <button id="PdelBc" style="display:block;">Удалить
+    <div id="dellA" style="display:none;">
+        <input id="delV" name="dl" type="text" placeholder="del"><br>
+        <button id="PdelBc">Удалить
     </button>
-    </div>
+    </div><br>
 
-    <div>
-        <input id="updateN" name="dl" type="text" placeholder="имя">
-        <input id="updateP" name="dl" type="text" placeholder="новый пароль">
-        <button id="Pupdatec" style="display:none;">Изменить пароль
+    <div id="updateA" style="display:none;">
+        <input id="updateN" name="dl" type="text" placeholder="имя"><br>
+        <input id="updateP" name="dl" type="text" placeholder="новый пароль"><br>
+        <button id="Pupdatec">Изменить пароль
     </button>
     </div>
 
@@ -64,7 +64,7 @@
                 var divA = document.createElement('span');
 
 
-                divp.innerHTML = "<br> " + el.name + "=" + el.passw + "=" + el.id + "<br> ";
+                divp.innerHTML = "<br> " + el.user_id + "=" + el.user_name + "=" + el.user_password + "=" + el.user_email + "<br>";
 
                 divE.appendChild(divp);
                 divE.appendChild(divA);
@@ -80,7 +80,7 @@
         loginB.onclick = () => {
             socket.emit("login", ([login.value, password.value]));
 
-            window.localStorage.setItem("aName", login.value);
+            //window.localStorage.setItem("aName", login.value);
             //alert('aName ' + window.localStorage.getItem('aName'));
             login.value = "";
             password.value = "";
@@ -88,11 +88,16 @@
 
 
         let nameP;
-        socket.on('sendname', function(value) {
-            nameP = value;
+
+        socket.on('sendname', function(valueS) {
+            nameP = valueS;
             if (nameP === "admin") {
-                PdelBc.style.display = "block";
-                Pupdatec.style.display = "block";
+                dellA.style.display = "block";
+                updateA.style.display = "block";
+            } else {
+                updateA.style.display = "block";
+                updateN.value = valueS;
+                dellA.style.display = "none";
             }
         });
 
@@ -115,6 +120,8 @@
 
 
         };
+
+        window.onunload = () => window.localStorage.setItem("aName", nameP);
     </script>
 
 </body>

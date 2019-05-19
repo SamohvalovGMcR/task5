@@ -24,9 +24,11 @@
     <div class="login">
         <h3>Регистрация</h3>
         <label for="login">Логин</label>
-        <input type="text" id="login" name="login" />
+        <input type="text" id="login" name="login" minlength="1" />
         <label for="password">Пароль</label>
-        <input type="password" id="password" name="password" />
+        <input type="password" id="password" name="password" minlength="1" />
+        <label for="email">Почта</label>
+        <input type="email" id="emailS" name="emailS" minlength="1" />
         <input type="submit" value="Зарегистрироватся" id="send" />
     </div>
 
@@ -34,9 +36,9 @@
     <script>
         /* socket.on('whuN', function() {
 
-                                    socket.emit("whuS");
-                                });
-                         */
+                                                                                                            socket.emit("whuS");
+                                                                                                        });
+                                                                                                 */
 
         socket.on('whu', function(value) {
 
@@ -48,7 +50,7 @@
                 var divA = document.createElement('span');
 
 
-                divp.innerHTML = "<br> " + el.name + "=" + el.passw + "=" + el.id + "<br> ";
+                divp.innerHTML = "<br> " + el.user_id + "=" + el.user_name + "=" + el.user_password + "=" + el.user_email + "<br>"
 
 
                 divE.appendChild(divp);
@@ -62,6 +64,7 @@
         send.onclick = function() {
             let name = login.value;
             let passwС = password.value;
+            let email = emailS.value;
             //if(url1.value.slice(0,7)==="http://"||url1.value.slice(0,8)==="https://") {  
             //alert(JSON.stringify(value));
             //socket.emit("Pserch", (name));
@@ -73,13 +76,14 @@
             //  if (l == 0) {
             socket.emit("PaddB", ([ //{}
                 name,
-                passwС
+                passwС,
+                email
 
             ]));
             //window.localStorage.removeItem("aName");
             login.value = "";
             password.value = "";
-
+            emailS.value = "";
             //}else {alert("no url")};
 
 
@@ -92,3 +96,4 @@
 </body>
 
 </html>
+<!-- убрать пустые -->

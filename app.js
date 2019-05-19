@@ -23,7 +23,7 @@ const pool = new pg.Client(config.get("confsql"));
 pool.connect();
 
 
-pool.query("CREATE TABLE users1 (Id SERIAL PRIMARY KEY, Name   CHARACTER VARYING(30) , passw CHARACTER VARYING(30))", (err, res) => {
+pool.query("CREATE TABLE public.users1( user_id serial NOT NULL, user_name character varying NOT NULL, user_password character varying NOT NULL, user_email character varying NOT NULL, PRIMARY KEY (user_id), CONSTRAINT user_name_uq UNIQUE (user_name), CONSTRAINT user_email_uq UNIQUE (user_email))", (err, res) => {
     if (err) {
         console.log(err.stack)
     }
@@ -47,13 +47,17 @@ pool.query("CREATE OR REPLACE  RULE rule3 AS ON DELETE TO public.users1 DO NOTIF
     }
 });
 ///???
-pool.query("SELECT * FROM users1 WHERE name = 'admin'", (err, res) => {
+const nameFind = (data) => "SELECT * FROM users1 WHERE user_name = '" + data + "'";
+
+pool.query(nameFind('admin'), (err, res) => {
     if (err) {
         console.log(err.stack)
-    }
-    if (res.rows.length == 0) {
-        //console.log("admin " + JSON.stringify(res.rows[0]));
-        pool.query("INSERT INTO users1(name, passw) VALUES ('almin', 'almin')", (err, res) => {
+    } //undefined!!!
+    if (res.rows.length > 0) {
+        console.log("admin yes" + JSON.stringify(res.rows))
+    } else {
+        console.log("admin no" + JSON.stringify(res.rows));
+        pool.query("INSERT INTO users1(user_name, user_password, user_email) VALUES ('admin', 'admin', 'admin@admin.com')", (err, res) => {
 
             if (err) {
                 console.log(err.stack)
@@ -67,11 +71,11 @@ pool.query("SELECT * FROM users1 WHERE name = 'admin'", (err, res) => {
 
 io.sockets.on('connection', function(client) {
     // if (client.name) {
-    client.emit("myName", client.name);
+    client.emit("myName", client.name); ///????
 
     // } //if 
 
-    const nameFind = (data) => "SELECT * FROM users1 WHERE name = '" + data + "'";
+
 
 
     const valueFind = () => //get
@@ -132,7 +136,7 @@ io.sockets.on('connection', function(client) {
                 if (res.rows.length !== 0) {
                     client.emit("message", "Такой есть!")
                 } else {
-                    pool.query('INSERT INTO users1(name, passw) VALUES($1, $2) ', data, (err, res) => {
+                    pool.query('INSERT INTO users1(user_name, user_password, user_email ) VALUES($1, $2, $3) ', data, (err, res) => {
                         // client.emit("message", "data " + data);
                         if (err) {
                             console.log(err.stack)
@@ -170,7 +174,7 @@ io.sockets.on('connection', function(client) {
 
     client.on("PdelB", function(data) { //удаление по имени
         if (client.name === "admin" && data !== "admin") {
-            pool.query("DELETE FROM users1 WHERE  name='" + data + "'", (err, res) => {
+            pool.query("DELETE FROM users1 WHERE  user_name='" + data + "'", (err, res) => {
                 if (err) {
                     console.log(err.stack)
                 }
@@ -188,19 +192,21 @@ io.sockets.on('connection', function(client) {
 
 
     client.on("Pupdate", function(data) {
-        pool.query("UPDATE users1 SET passw ='" + data[1] + "' WHERE name='" + data[0] + "'", (err, res) => {
-            if (err) {
-                console.log(err.stack)
-            }
+        if (client.name === data[0] || client.name === "admin") { //проверка, не надежно
+            pool.query("UPDATE users1 SET user_password ='" + data[1] + "' WHERE user_name='" + data[0] + "'", (err, res) => {
+                if (err) {
+                    console.log(err.stack)
+                }
 
-        })
+            })
 
 
-        // setTimeout(function() {
-        valueFind();
-        // }, 200);
+            // setTimeout(function() {
+            valueFind();
+            // }, 200);
 
-        client.broadcast.emit('whuN');
+            client.broadcast.emit('whuN');
+        } else client.emit("message", "Чужой нелзя!");
     });
 
 
@@ -229,7 +235,7 @@ io.sockets.on('connection', function(client) {
     client.on("login", function(data) {
         delete client.Token;
         delete client.name;
-        pool.query("SELECT * FROM users1 WHERE name = '" + data[0] + "'", (err, res) => {
+        pool.query(nameFind(data[0]), (err, res) => {
                 if (err) {
                     console.log(err.stack)
                 }
@@ -237,11 +243,11 @@ io.sockets.on('connection', function(client) {
                 // client.emit("message", res.rows[0].passw);
 
 
-                if (res.rows.length > 0 && data[1] && data[1] === res.rows[0].passw) {
-                    client.Token = generateToken(res.rows[0].name);
-                    client.name = res.rows[0].name; //!!!!!!!!
+                if (res.rows.length > 0 && data[1] && data[1] === res.rows[0].user_password) {
+                    client.Token = generateToken(res.rows[0].user_name);
+                    client.name = res.rows[0].user_name; //!!!!!!!!
                     client.emit("sendname", client.name);
-                    client.emit("message", "удачно " + res.rows[0].passw + "=" + data[1] + " " + res.rows[0].name + "=" + data[0] + " tok=" + client.Token);
+                    client.emit("message", "удачно " + res.rows[0].user_password + "=" + data[1] + " " + res.rows[0].user_name + "=" + data[0] + " tok=" + client.Token);
                 } else { client.emit("message", "не удачнно " + JSON.stringify(res.rows[0]) + " tok=" + client.Token); }
             }) //отправить массивом
     });

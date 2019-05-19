@@ -57,7 +57,7 @@ ddv.innerHTML = Ht;
 document.body.appendChild(ddv);
 //}
 const divn2 = document.createElement('button');
-divn2.innerHTML = "Вход2";
+divn2.innerHTML = "Вход";
 divn2.classList.add('bup');
 divn2.onmousedown = () => {
     divn2.classList.remove('bup');
