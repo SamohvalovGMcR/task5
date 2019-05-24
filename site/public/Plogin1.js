@@ -1,0 +1,1 @@
+const Ht = '<div class="login" style="display:none;"><button>X</button><h3>Вход</h3><label for="login">Логин</label><input type="text" id="login" name="login" /><label for="password">Пароль</label><input type="password" id="password" name="password" /><input type="submit" value="Войти" id="loginB" /></div>'
