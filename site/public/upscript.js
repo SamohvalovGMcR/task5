@@ -1,4 +1,5 @@
 //const Tbutton = 2;
+//let socket = {};
 
 for (let i = 0; i < Arrbutton.length; i++) {
     const divn = document.createElement('button');
@@ -16,7 +17,7 @@ for (let i = 0; i < Arrbutton.length; i++) {
 
             document.getElementById(idup).querySelectorAll('button')[Tbutton].classList.remove('bdow');
             document.getElementById(idup).querySelectorAll('button')[Tbutton].classList.add('bup');
-            //e.target.style.color="red";
+
         }; //onmousedown
         divn.onmouseup = () => {
             location.href = Arrbutton[i].ssl;
@@ -32,16 +33,20 @@ for (let i = 0; i < Arrbutton.length; i++) {
 
 
 
+if (document.getElementById("menu")) menu.onclick = () => {
 
+    if (lft.style.minWidth === "160px") {
+        lft.style.minWidth = "0";
+    } else lft.style.minWidth = "160px";
+    // alert(lft.style.position)
+    lft.style.top = -6 - sslk.clientHeight + window.pageYOffset + "px";
+};
 
 let p = document.createElement('p');
 
 document.getElementById("Hn").appendChild(p);
 
-socket.on('sendname', function(name1) {
-    p.dataset.name1 = name1;
-    p.innerHTML = "Вы-" + name1;
-});
+
 
 //let name1 = window.localStorage.getItem('aName') || [];
 p.dataset.name1 = window.localStorage.getItem('aName');
@@ -50,7 +55,7 @@ p.innerHTML = "Вы-" + window.localStorage.getItem('aName') || [];
 
 window.onunload = () => window.localStorage.setItem("aName", p.dataset.name1);
 
-//Plogin1.onload = () => {
+
 
 let ddv = document.createElement('div') //
 ddv.innerHTML = Ht;
@@ -65,10 +70,20 @@ divn2.onmousedown = () => {
 };
 divn2.onmouseup = () => {
 
-    //document.body.appendChild(doc.cloneNode(true));
+
     document.querySelector('.login').style.display = "block";
     divn2.classList.remove('bdow');
     divn2.classList.add('bup');
 };
 
 document.getElementById("bdiv").appendChild(divn2);
+
+//scriptSconn.onload = () => {
+socket.on('sendname', function(name1) {
+
+    p.dataset.name1 = name1;
+    p.innerHTML = "Вы-" + name1;
+});
+
+// } //onload
+//

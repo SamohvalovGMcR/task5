@@ -54,10 +54,10 @@ pool.query(nameFind('admin'), (err, res) => {
         console.log(err.stack)
     } //undefined!!!
     if (res.rows.length > 0) {
-        console.log("admin yes" + JSON.stringify(res.rows))
+        // console.log("admin yes" + JSON.stringify(res.rows))
     } else {
-        console.log("admin no" + JSON.stringify(res.rows));
-        pool.query("INSERT INTO users1(user_name, user_password, user_email) VALUES ('admin', 'admin', 'admin@admin.com')", (err, res) => {
+        // console.log("admin no" + JSON.stringify(res.rows));
+        pool.query("INSERT INTO users1(user_name, user_password, user_email) VALUES ('admin','" + generateToken('adminpas') + "' , 'admin@admin.com')", (err, res) => { //+ generateToken('admin') + 
 
             if (err) {
                 console.log(err.stack)
@@ -67,16 +67,21 @@ pool.query(nameFind('admin'), (err, res) => {
     };
 });
 
-///???
+
+const verifyToken = (token) => { //
+    let bbb = {};
+    jwt.verify(token, SECRET_PHRASE, (err, res) => {
+        if (err) {
+            console.log(err.name);
+        }
+        console.log("token " + JSON.stringify(res));
+        if (res) bbb = res;
+    });
+    return bbb;
+};
+
 
 io.sockets.on('connection', function(client) {
-    // if (client.name) {
-    client.emit("myName", client.name); ///????
-
-    // } //if 
-
-
-
 
     const valueFind = () => //get
         pool.query('SELECT *  FROM users1', (err, res) => {
@@ -116,6 +121,7 @@ io.sockets.on('connection', function(client) {
     pool.on('notification', function(msg) {
         console.log("notification! " + JSON.stringify(msg));
         //client.emit("message", "notification!" + JSON.stringify(msg));
+        valueFind(); ///неуверен!
         client.broadcast.emit('whuN');
     });
 
@@ -123,7 +129,7 @@ io.sockets.on('connection', function(client) {
     client.on("PaddB", function(data) { //добавить//verify
 
         //console.log(data);
-        if (client.Token) {
+        if (client.Token || client.name) {
             client.emit("message", "Вы уже!")
         } else {
             pool.query(nameFind(data[0]), (err, res) => {
@@ -136,6 +142,7 @@ io.sockets.on('connection', function(client) {
                 if (res.rows.length !== 0) {
                     client.emit("message", "Такой есть!")
                 } else {
+                    data[1] = generateToken(data[1]);
                     pool.query('INSERT INTO users1(user_name, user_password, user_email ) VALUES($1, $2, $3) ', data, (err, res) => {
                         // client.emit("message", "data " + data);
                         if (err) {
@@ -147,7 +154,8 @@ io.sockets.on('connection', function(client) {
                     })
 
                     client.Token = generateToken(data[0]);
-                    console.log(client.Token);
+                    client.name = data[0];
+                    //console.log(client.Token);
 
                     //setTimeout(function() {
                     valueFind();
@@ -193,6 +201,7 @@ io.sockets.on('connection', function(client) {
 
     client.on("Pupdate", function(data) {
         if (client.name === data[0] || client.name === "admin") { //проверка, не надежно
+            data[1] = generateToken(data[1]);
             pool.query("UPDATE users1 SET user_password ='" + data[1] + "' WHERE user_name='" + data[0] + "'", (err, res) => {
                 if (err) {
                     console.log(err.stack)
@@ -211,47 +220,32 @@ io.sockets.on('connection', function(client) {
 
 
 
-    /* 
-        client.on("Pserch", function(data) {
-            //console.log('data ' + nameFind(data))
-            //client.emit("Pserchres", nameFind(data).length); //лучше не отправлять vse
-            pool.query(nameFind(data), (err, res) => {
-                if (err) {
-                    console.log(err.stack)
-                }
 
-                console.log("data" + res.rows);
-
-            })
-
-
-            /*  setTimeout(function() {
-                 valueFind();
-             }, 200); */
-
-    //client.broadcast.emit('whuN');*/
-    // });
-
-    client.on("login", function(data) {
+    client.on("login", function(data) { //verifyToken вешает сервер!
         delete client.Token;
         delete client.name;
         pool.query(nameFind(data[0]), (err, res) => {
-                if (err) {
-                    console.log(err.stack)
-                }
-                console.log("наш" + JSON.stringify(res.rows));
-                // client.emit("message", res.rows[0].passw);
-
-
-                if (res.rows.length > 0 && data[1] && data[1] === res.rows[0].user_password) {
-                    client.Token = generateToken(res.rows[0].user_name);
-                    client.name = res.rows[0].user_name; //!!!!!!!!
-                    client.emit("sendname", client.name);
-                    client.emit("message", "удачно " + res.rows[0].user_password + "=" + data[1] + " " + res.rows[0].user_name + "=" + data[0] + " tok=" + client.Token);
-                } else { client.emit("message", "не удачнно " + JSON.stringify(res.rows[0]) + " tok=" + client.Token); }
-            }) //отправить массивом
+            if (err) {
+                console.log(err.stack)
+            }
+            console.log("наш" + JSON.stringify(res.rows));
+            // client.emit("message", res.rows[0].passw);
+            /*  if (data[0] === "admin") {
+                 //data[1] = generateToken(data[1]);
+                 client.emit("message", "ver " + verifyToken(res.rows[0].user_password).entity_id); //verifyToken("admin")
+                 //client.emit("message", data[1]);
+                 res.rows[0].user_password = verifyToken(res.rows[0].user_password).entity_id
+             } //if */
+            let tbbb = {};
+            if (res.rows[0]) tbbb = verifyToken(res.rows[0].user_password) //все коряво!
+            console.log("verT " + JSON.stringify(tbbb));
+            if (res.rows.length > 0 && data[1] && data[1] === tbbb.entity_id) {
+                client.Token = generateToken(res.rows[0].user_name);
+                client.name = res.rows[0].user_name; //!!!!!!!!
+                client.emit("sendname", client.name);
+                client.emit("message", "удачно " + res.rows[0].user_password + "=" + data[1] + " " + res.rows[0].user_name + "=" + data[0] + " tok=" + client.Token);
+            } else { client.emit("message", "не удачнно " + JSON.stringify(res.rows[0]) + " tok=" + client.Token); }
+        })
     });
 
 });
-
-//NOT NULL UNIQUE
