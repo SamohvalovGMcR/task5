@@ -11,7 +11,7 @@
     "dependencies": {
         "jsonwebtoken": "^8.5.1",
         "nconf": "^0.10.0",
-        "npm": "^6.9.0",
+        "npm": "^6.13.4",
         "pg": "^7.11.0",
         "socket.io": "^2.2.0"
     }
